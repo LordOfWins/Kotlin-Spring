@@ -32,4 +32,7 @@ fun main() {
 
     println(multiLine1)
 
+    topLevelFunction()
+    println("num :  $num")
+    println("courseName : $courseName")
 }
