@@ -10,7 +10,7 @@ fun main() {
     checkType("SEUNGJAE")
 
     castNumber(1.0)
-//    castNumber(1)
+    castNumber(1)
 
     val number = 1
     val numberDouble = number.toDouble()
@@ -19,7 +19,11 @@ fun main() {
 
 fun castNumber(any: Any) {
     when (any) {
-        any as Double -> {
+        any as? Double -> {
+            println(any)
+        }
+
+        any as Int -> {
             println(any)
         }
     }
