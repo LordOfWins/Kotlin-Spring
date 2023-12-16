@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: spring-kotlin
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: ""
+  jpa:
+    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+message: Hello from the default message source
+
+#---
+#spring:
+#  config:
+#    activate:
+#      on-profile: prod
+#message: Hello from prod
+#
+#---
+#spring:
+#  config:
+#    activate:
+#      on-profile: non-prod
+#message: Hello from prod
