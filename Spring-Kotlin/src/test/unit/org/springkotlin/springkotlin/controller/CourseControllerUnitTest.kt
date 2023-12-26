@@ -4,7 +4,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.just
 import io.mockk.runs
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,7 +40,7 @@ class CourseControllerUnitTest {
 
     @Test
     fun getCourses() {
-        every { courseService.getCourses() }.returnsMany(
+        every { courseService.getCourses(any()) }.returnsMany(
             listOf(
                 courseDTO(id = 1),
                 courseDTO(id = 2),
@@ -50,7 +50,28 @@ class CourseControllerUnitTest {
         val courses = webTestClient.get().uri("/v1/courses").exchange().expectStatus().is2xxSuccessful.expectBodyList(
             CourseDTO::class.java
         ).returnResult().responseBody
-        Assertions.assertEquals(3, courses!!.size)
+        assertEquals(3, courses!!.size)
+    }
+
+    @Test
+    fun validation() {
+        val courseDTO = CourseDTO(null, name = "", category = "")
+        every { courseService.addCourse(any()) } returns courseDTO(id = 1)
+        val response =
+            webTestClient.post().uri("/v1/courses").bodyValue(courseDTO).exchange()
+                .expectStatus().isBadRequest.expectBody(String::class.java).returnResult().responseBody
+        assertEquals("Name cannot be blank, category cannot be blank", response)
+    }
+
+    @Test
+    fun addCourseRuntimeException() {
+        val courseDTO = CourseDTO(null, name = "test", category = "test")
+        val errorMessage = "Unexpected error occurred while processing request"
+        every { courseService.addCourse(any()) } throws RuntimeException(errorMessage)
+        val response =
+            webTestClient.post().uri("/v1/courses").bodyValue(courseDTO).exchange()
+                .expectStatus().is5xxServerError.expectBody(String::class.java).returnResult().responseBody
+        assertEquals(errorMessage, response)
     }
 
     @Test
@@ -67,7 +88,7 @@ class CourseControllerUnitTest {
                 .expectStatus().isOk.expectBody(
                     CourseDTO::class.java
                 ).returnResult().responseBody
-        Assertions.assertEquals("sdfsdf", updatedCourse!!.name)
+        assertEquals("sdfsdf", updatedCourse!!.name)
     }
 
     @Test
