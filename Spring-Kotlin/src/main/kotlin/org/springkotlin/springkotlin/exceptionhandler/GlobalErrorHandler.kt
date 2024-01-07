@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import org.springkotlin.springkotlin.service.InstructorNotValidException
 
 @Component
 @ControllerAdvice
@@ -28,6 +29,15 @@ class GlobalErrorHandler : ResponseEntityExceptionHandler() {
             error.defaultMessage!!
         }.sorted()
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.joinToString(separator = ", ") { it })
+    }
+
+    @ExceptionHandler(InstructorNotValidException::class)
+    fun handleInstructorNotValidException(
+        ex: Exception,
+        request: WebRequest
+    ): ResponseEntity<Any>? {
+        logger.error("Exception observed : ${ex.message}", ex)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.message)
     }
 
     @ExceptionHandler(Exception::class)
