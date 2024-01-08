@@ -8,19 +8,24 @@ import org.springkotlin.springkotlin.exception.CourseNotFoundException
 import org.springkotlin.springkotlin.repository.CourseRepository
 
 @Service
-class CourseService(val courseRepository: CourseRepository) {
+class CourseService(val courseRepository: CourseRepository, val instructorService: InstructorService) {
 
     companion object : KLogging()
 
     fun addCourse(courseDTO: CourseDTO): CourseDTO {
+
+        val instructor = instructorService.findByInstructorId(courseDTO.instructorId!!)
+        if (!instructor.isPresent) {
+            throw InstructorNotValidException("Instructor not found with id: ${courseDTO.instructorId}")
+        }
         val course = courseDTO.let {
-            Course(id = null, name = it.name, category = it.category)
+            Course(id = null, name = it.name, category = it.category, instructor.get())
         }
         courseRepository.save(course)
 
-        logger.info("Course saved: $course")
+//        logger.info("Course saved: $course")
         return course.let {
-            CourseDTO(id = it.id, name = it.name, category = it.category)
+            CourseDTO(id = it.id, name = it.name, category = it.category, it.instructor!!.id)
         }
     }
 
