@@ -7,22 +7,32 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
+import org.springkotlin.springkotlin.util.PostgreSQLContainerInitializer
 import org.springkotlin.springkotlin.util.courseEntityList
+import org.springkotlin.springkotlin.util.instructorEntity
 import java.util.stream.Stream
 
 @DataJpaTest
 @ActiveProfiles("test")
-class CourseRepositoryIntgTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class CourseRepositoryIntgTest : PostgreSQLContainerInitializer() {
 
     @Autowired
     lateinit var courseRepository: CourseRepository
 
+    @Autowired
+    lateinit var instructorRepository: InstructorRepository
+
     @BeforeEach
     fun setUp() {
+
         courseRepository.deleteAll()
-        val courses = courseEntityList()
+        val instructor = instructorEntity()
+        instructorRepository.save(instructor)
+        val courses = courseEntityList(instructor)
         courseRepository.saveAll(courses)
     }
 
