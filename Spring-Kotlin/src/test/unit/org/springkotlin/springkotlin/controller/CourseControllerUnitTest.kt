@@ -27,7 +27,7 @@ class CourseControllerUnitTest {
     @Test
     fun addCourse() {
         //given
-        val courseDTO = CourseDTO(null, name = "test", category = "test")
+        val courseDTO = CourseDTO(null, name = "test", category = "test", 1)
         every { courseService.addCourse(any()) } returns courseDTO(id = 1)
         val savedCourseDTO =
             webTestClient.post().uri("/v1/courses").bodyValue(courseDTO).exchange().expectStatus().isCreated.expectBody(
@@ -55,7 +55,7 @@ class CourseControllerUnitTest {
 
     @Test
     fun validation() {
-        val courseDTO = CourseDTO(null, name = "", category = "")
+        val courseDTO = CourseDTO(null, name = "", category = "", 1)
         every { courseService.addCourse(any()) } returns courseDTO(id = 1)
         val response =
             webTestClient.post().uri("/v1/courses").bodyValue(courseDTO).exchange()
@@ -65,7 +65,7 @@ class CourseControllerUnitTest {
 
     @Test
     fun addCourseRuntimeException() {
-        val courseDTO = CourseDTO(null, name = "test", category = "test")
+        val courseDTO = CourseDTO(null, name = "test", category = "test", 1)
         val errorMessage = "Unexpected error occurred while processing request"
         every { courseService.addCourse(any()) } throws RuntimeException(errorMessage)
         val response =
@@ -81,7 +81,7 @@ class CourseControllerUnitTest {
             name = "sdfsdf",
             category = "sdfsdf"
         )
-        val updatedCourseDTO = CourseDTO(null, "sdfsdf", "sdfsdf")
+        val updatedCourseDTO = CourseDTO(null, "sdfsdf", "sdfsdf", 1)
 
         val updatedCourse =
             webTestClient.put().uri("/v1/courses/{id}", 100).bodyValue(updatedCourseDTO).exchange()
