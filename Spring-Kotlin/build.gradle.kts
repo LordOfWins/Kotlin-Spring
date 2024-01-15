@@ -18,7 +18,12 @@ java {
 repositories {
     mavenCentral()
 }
-
+extra["testcontainersVersion"] = "1.16.2"
+dependencyManagement {
+    imports {
+        mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
+    }
+}
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -29,14 +34,18 @@ dependencies {
     val kLogging = "3.0.5"
     implementation("io.github.microutils:kotlin-logging:$kLogging")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("com.h2database:h2")
-//    runtimeOnly("org.postgresql:postgresql")
+//    runtimeOnly("com.h2database:h2")
+    runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")
     val mokk = "1.13.4"
     testImplementation("io.mockk:mockk:$mokk")
     val ninja = "4.0.2"
     testImplementation("com.ninja-squad:springmockk:${ninja}")
+
+    //test-containers
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
 }
 
 tasks.withType<KotlinCompile> {
